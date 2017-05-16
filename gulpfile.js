@@ -29,7 +29,7 @@ gulp.task('generate-sw', function() {
     ],
     stripPrefix: '.',
     runtimeCaching: [{
-      urlPattern: /^https:\/\/publicdata-weather\.firebaseio\.com/,
+      urlPattern: /^https:\/\/eatigo\.herokuapp\.com/,
       handler: 'networkFirst',
       options: {
         cache: {
