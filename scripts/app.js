@@ -95,7 +95,7 @@ String.prototype.supplant = function (o) {
 
   /* Event listener for refresh button */
   document.getElementById('butRefresh').addEventListener('click', function() {
-    app.updateForecasts();
+    app.getRestaurants();
   });
 
 
