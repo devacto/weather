@@ -23,6 +23,8 @@ String.prototype.supplant = function (o) {
   var weatherAPIUrlBase = 'https://publicdata-weather.firebaseio.com/';
   var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/restaurant/';
 
+  var backgroundUrlBase= "url('{picUrl}') center / cover"
+
   var app = {
     isLoading: true,
     visibleRestaurantCards: {},
@@ -30,6 +32,7 @@ String.prototype.supplant = function (o) {
     selectedCities: [],
     spinner: document.querySelector('.loader'),
     cardTemplate: document.querySelector('.cardTemplate'),
+    restaurantCardTemplate: document.querySelector('.restaurantCardTemplate'),
     container: document.querySelector('.main'),
     addDialog: document.querySelector('.dialog-container'),
     daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -200,20 +203,20 @@ String.prototype.supplant = function (o) {
    ****************************************************************************/
    
   // Updates restaurant cards given some data.
-  app.updateRestaurantCard = function(data) {
-    var card = app.visibleRestaurantCards[data.key];
+  app.updateRestaurantCard = function(restaurant) {
+    var card = app.visibleRestaurantCards[restaurant.key];
     if (!card) {
-      card = app.cardTemplate.cloneNode(true);
-      card.classList.remove('cardTemplate');
-      card.querySelector('.location').textContent = data.label;
+      card = app.restaurantCardTemplate.cloneNode(true);
+      card.classList.remove('restaurantCardTemplate');
+      card.querySelector('.name').textContent = restaurant.name;
       card.removeAttribute('hidden');
       app.container.appendChild(card);
-      app.visibleCards[data.key] = card;
+      app.visibleRestaurantCards[restaurant.key] = card;
     }
 
-    card.querySelector('.name').textContext = data.name;
-    card.querySelector('.desc').textContext = data.desc;
-    card.querySelector('.name').style.background = "url('https://static.eatigo.com/eatigo_TokaikanJapaneseRestaurant_20170214152650_9784.jpg') center / cover";
+    card.querySelector('.name').textContent = restaurant.name;
+    card.querySelector('.desc').textContent = restaurant.desc;
+    card.querySelector('.picture').style.background = backgroundUrlBase.supplant({ picUrl: restaurant.pic });
     
     if (app.isLoading) {
       app.spinner.setAttribute('hidden', true);
@@ -227,6 +230,11 @@ String.prototype.supplant = function (o) {
    * Methods for dealing with the model
    *
    ****************************************************************************/
+
+  // Gets restaurants from the injected object.
+  app.getRestaurants = function(key, label) {
+    app.updateRestaurantCard(injectedRestaurant[0]);
+  }
 
   // Gets a forecast for a specific city and update the card with the data
   app.getForecast = function(key, label) {
@@ -264,6 +272,7 @@ String.prototype.supplant = function (o) {
   };
 
   document.addEventListener('DOMContentLoaded', function() {
+    app.updateRestaurantCard(injectedRestaurant[0]);
     window.localforage.getItem('selectedCities', function(err, cityList) {
       if (cityList) {
         app.selectedCities = cityList;
