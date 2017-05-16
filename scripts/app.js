@@ -174,11 +174,63 @@
     }
   };
 
+
   /*****************************************************************************
    *
-   * Getting restaurant details
+   * Updating restaurant details
    *
    ****************************************************************************/
+   
+  // Updates restaurant cards with data from server.
+  app.updateRestaurantCard = function(data) {
+    var card = app.visibleRestaurantCards[data.key];
+    if (!card) {
+      card = app.cardTemplate.cloneNode(true);
+      card.classList.remove('cardTemplate');
+      card.querySelector('.location').textContent = data.label;
+      card.removeAttribute('hidden');
+      app.container.appendChild(card);
+      app.visibleCards[data.key] = card;
+    }
+
+    card.querySelector('.description').textContent = data.currently.summary;
+    card.querySelector('.date').textContent =
+      new Date(data.currently.time * 1000);
+    card.querySelector('.current .icon').classList.add(data.currently.icon);
+    card.querySelector('.current .temperature .value').textContent =
+      Math.round(data.currently.temperature);
+    card.querySelector('.current .feels-like .value').textContent =
+      Math.round(data.currently.apparentTemperature);
+    card.querySelector('.current .precip').textContent =
+      Math.round(data.currently.precipProbability * 100) + '%';
+    card.querySelector('.current .humidity').textContent =
+      Math.round(data.currently.humidity * 100) + '%';
+    card.querySelector('.current .wind .value').textContent =
+      Math.round(data.currently.windSpeed);
+    card.querySelector('.current .wind .direction').textContent =
+      data.currently.windBearing;
+    var nextDays = card.querySelectorAll('.future .oneday');
+    var today = new Date();
+    today = today.getDay();
+    for (var i = 0; i < 7; i++) {
+      var nextDay = nextDays[i];
+      var daily = data.daily.data[i];
+      if (daily && nextDay) {
+        nextDay.querySelector('.date').textContent =
+          app.daysOfWeek[(i + today) % 7];
+        nextDay.querySelector('.icon').classList.add(daily.icon);
+        nextDay.querySelector('.temp-high .value').textContent =
+          Math.round(daily.temperatureMax);
+        nextDay.querySelector('.temp-low .value').textContent =
+          Math.round(daily.temperatureMin);
+      }
+    }
+    if (app.isLoading) {
+      app.spinner.setAttribute('hidden', true);
+      app.container.removeAttribute('hidden');
+      app.isLoading = false;
+    }
+  };
 
   /*****************************************************************************
    *
