@@ -3,6 +3,7 @@
   'use strict';
 
   var weatherAPIUrlBase = 'https://publicdata-weather.firebaseio.com/';
+  var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/restaurant';
 
   var app = {
     isLoading: true,
@@ -15,10 +16,24 @@
     daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   };
 
-
+  
   /*****************************************************************************
    *
-   * Fake Data
+   * Fake Restaurant Data
+   *
+   ****************************************************************************/
+   
+   var injectedRestaurant = [{
+     "id": 1,
+     "name": "Tokaikan Japanese Restaurant",
+     "pic": "https://static.eatigo.com/eatigo_TokaikanJapaneseRestaurant_20170214152650_9784.jpg",
+     "desc": "At Tokaikan Japanese Restaurant, tuck into an impressive selection of quality cuisine, while enjoying a visual feast in the form of Teppanyaki chefs cooking up a storm before your eyes."
+   }]
+
+  
+  /*****************************************************************************
+   *
+   * Fake Forecast Data
    *
    ****************************************************************************/
 
@@ -158,6 +173,11 @@
     }
   };
 
+  /*****************************************************************************
+   *
+   * Getting restaurant details
+   *
+   ****************************************************************************/
 
   /*****************************************************************************
    *
