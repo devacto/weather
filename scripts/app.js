@@ -21,7 +21,7 @@ String.prototype.supplant = function (o) {
   'use strict';
 
   var weatherAPIUrlBase = 'https://publicdata-weather.firebaseio.com/';
-  var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/restaurant';
+  var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/restaurant/';
 
   var app = {
     isLoading: true,
