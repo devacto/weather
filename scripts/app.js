@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
 
@@ -181,7 +180,7 @@
    *
    ****************************************************************************/
    
-  // Updates restaurant cards with data from server.
+  // Updates restaurant cards given some data.
   app.updateRestaurantCard = function(data) {
     var card = app.visibleRestaurantCards[data.key];
     if (!card) {
@@ -193,38 +192,10 @@
       app.visibleCards[data.key] = card;
     }
 
-    card.querySelector('.description').textContent = data.currently.summary;
-    card.querySelector('.date').textContent =
-      new Date(data.currently.time * 1000);
-    card.querySelector('.current .icon').classList.add(data.currently.icon);
-    card.querySelector('.current .temperature .value').textContent =
-      Math.round(data.currently.temperature);
-    card.querySelector('.current .feels-like .value').textContent =
-      Math.round(data.currently.apparentTemperature);
-    card.querySelector('.current .precip').textContent =
-      Math.round(data.currently.precipProbability * 100) + '%';
-    card.querySelector('.current .humidity').textContent =
-      Math.round(data.currently.humidity * 100) + '%';
-    card.querySelector('.current .wind .value').textContent =
-      Math.round(data.currently.windSpeed);
-    card.querySelector('.current .wind .direction').textContent =
-      data.currently.windBearing;
-    var nextDays = card.querySelectorAll('.future .oneday');
-    var today = new Date();
-    today = today.getDay();
-    for (var i = 0; i < 7; i++) {
-      var nextDay = nextDays[i];
-      var daily = data.daily.data[i];
-      if (daily && nextDay) {
-        nextDay.querySelector('.date').textContent =
-          app.daysOfWeek[(i + today) % 7];
-        nextDay.querySelector('.icon').classList.add(daily.icon);
-        nextDay.querySelector('.temp-high .value').textContent =
-          Math.round(daily.temperatureMax);
-        nextDay.querySelector('.temp-low .value').textContent =
-          Math.round(daily.temperatureMin);
-      }
-    }
+    card.querySelector('.name').textContext = data.name;
+    card.querySelector('.desc').textContext = data.desc;
+    card.querySelector('.name').style.background = "url('https://static.eatigo.com/eatigo_TokaikanJapaneseRestaurant_20170214152650_9784.jpg') center / cover";
+    
     if (app.isLoading) {
       app.spinner.setAttribute('hidden', true);
       app.container.removeAttribute('hidden');
