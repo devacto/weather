@@ -1,3 +1,22 @@
+/*****************************************************************************
+ *
+ * String Interpolation
+ *
+ ****************************************************************************/
+
+// Usage:
+// alert("I'm {age} years old!".supplant({ age: 29 }));
+// alert("The {a} says {n}, {n}, {n}!".supplant({ a: 'cow', n: 'moo' }));
+String.prototype.supplant = function (o) {
+    return this.replace(/{([^{}]*)}/g,
+        function (a, b) {
+            var r = o[b];
+            return typeof r === 'string' || typeof r === 'number' ? r : a;
+        }
+    );
+};
+
+
 (function() {
   'use strict';
 
