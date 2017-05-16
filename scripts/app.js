@@ -21,7 +21,7 @@ String.prototype.supplant = function (o) {
   'use strict';
 
   var weatherAPIUrlBase = 'https://publicdata-weather.firebaseio.com/';
-  var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/restaurant/';
+  var restaurantAPIUrlBase = 'https://eatigo.herokuapp.com/';
 
   var backgroundUrlBase= "url('{picUrl}') center / cover"
 
@@ -46,10 +46,10 @@ String.prototype.supplant = function (o) {
    ****************************************************************************/
    
    var injectedRestaurant = [{
-     "id": 1,
-     "name": "Tokaikan Japanese Restaurant",
+     "id": 0,
+     "name": "Welcome!",
      "pic": "https://static.eatigo.com/eatigo_TokaikanJapaneseRestaurant_20170214152650_9784.jpg",
-     "desc": "At Tokaikan Japanese Restaurant, tuck into an impressive selection of quality cuisine, while enjoying a visual feast in the form of Teppanyaki chefs cooking up a storm before your eyes."
+     "desc": "Unfortunately, you are offline."
    }]
 
   
@@ -96,29 +96,6 @@ String.prototype.supplant = function (o) {
   /* Event listener for refresh button */
   document.getElementById('butRefresh').addEventListener('click', function() {
     app.updateForecasts();
-  });
-
-  /* Event listener for add new city button */
-  document.getElementById('butAdd').addEventListener('click', function() {
-    // Open/show the add new city dialog
-    app.toggleAddDialog(true);
-  });
-
-  /* Event listener for add city button in add city dialog */
-  document.getElementById('butAddCity').addEventListener('click', function() {
-    var select = document.getElementById('selectCityToAdd');
-    var selected = select.options[select.selectedIndex];
-    var key = selected.value;
-    var label = selected.textContent;
-    app.getForecast(key, label);
-    app.selectedCities.push({key: key, label: label});
-    app.saveSelectedCities();
-    app.toggleAddDialog(false);
-  });
-
-  /* Event listener for cancel button in add city dialog */
-  document.getElementById('butAddCancel').addEventListener('click', function() {
-    app.toggleAddDialog(false);
   });
 
 
@@ -201,19 +178,15 @@ String.prototype.supplant = function (o) {
    * Updating restaurant details
    *
    ****************************************************************************/
-   
+
   // Updates restaurant cards given some data.
   app.updateRestaurantCard = function(restaurant) {
     var card = app.visibleRestaurantCards[restaurant.key];
-    if (!card) {
-      card = app.restaurantCardTemplate.cloneNode(true);
-      card.classList.remove('restaurantCardTemplate');
-      card.querySelector('.name').textContent = restaurant.name;
-      card.removeAttribute('hidden');
-      app.container.appendChild(card);
-      app.visibleRestaurantCards[restaurant.key] = card;
-    }
-
+    card = app.restaurantCardTemplate.cloneNode(true);
+    card.classList.remove('restaurantCardTemplate');
+    card.removeAttribute('hidden');
+    app.container.appendChild(card);
+    app.visibleRestaurantCards[restaurant.key] = card;
     card.querySelector('.name').textContent = restaurant.name;
     card.querySelector('.desc').textContent = restaurant.desc;
     card.querySelector('.picture').style.background = backgroundUrlBase.supplant({ picUrl: restaurant.pic });
@@ -225,16 +198,37 @@ String.prototype.supplant = function (o) {
     }
   };
 
+
   /*****************************************************************************
    *
    * Methods for dealing with the model
    *
    ****************************************************************************/
+  
+  app.updateRestaurants = function(restaurants) {
+    for (var index = 0; index < restaurants.length; ++index) {
+      app.updateRestaurantCard(restaurants[index]);
+    }
+  }
 
   // Gets restaurants from the injected object.
-  app.getRestaurants = function(key, label) {
-    app.updateRestaurantCard(injectedRestaurant[0]);
-  }
+  app.getRestaurants = function() {
+    console.log('Getting restaurants.');
+    var url = restaurantAPIUrlBase + 'restaurant';
+
+    // Make the XHR to get the data, then update the card
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState === XMLHttpRequest.DONE) {
+        if (request.status === 200) {
+          var response = JSON.parse(request.response);
+          app.updateRestaurants(response);
+        }
+      }
+    };
+    request.open('GET', url);
+    request.send();
+  };
 
   // Gets a forecast for a specific city and update the card with the data
   app.getForecast = function(key, label) {
@@ -272,12 +266,12 @@ String.prototype.supplant = function (o) {
   };
 
   document.addEventListener('DOMContentLoaded', function() {
-    app.updateRestaurantCard(injectedRestaurant[0]);
     window.localforage.getItem('selectedCities', function(err, cityList) {
       if (cityList) {
         app.selectedCities = cityList;
         app.selectedCities.forEach(function(city) {
           app.getForecast(city.key, city.label);
+          app.getRestaurants();
         });
       } else {
         app.updateForecastCard(injectedForecast);
