@@ -213,7 +213,6 @@ String.prototype.supplant = function (o) {
 
   // Gets restaurants from the injected object.
   app.getRestaurants = function() {
-    console.log('Getting restaurants.');
     var url = restaurantAPIUrlBase + 'restaurant';
 
     // Make the XHR to get the data, then update the card
@@ -260,27 +259,8 @@ String.prototype.supplant = function (o) {
     request.send();
   };
 
-  // Save user-selected city to local storage
-  app.saveSelectedCities = function() {
-    window.localforage.setItem('selectedCities', app.selectedCities);
-  };
-
   document.addEventListener('DOMContentLoaded', function() {
-    window.localforage.getItem('selectedCities', function(err, cityList) {
-      if (cityList) {
-        app.selectedCities = cityList;
-        app.selectedCities.forEach(function(city) {
-          app.getForecast(city.key, city.label);
-          app.getRestaurants();
-        });
-      } else {
-        app.updateForecastCard(injectedForecast);
-        app.selectedCities = [
-          {key: injectedForecast.key, label: injectedForecast.label}
-        ];
-        app.saveSelectedCities();
-      }
-    });
+    app.getRestaurants();
   });
 
   // Iterate all of the cards and attempt to get the latest forecast data
