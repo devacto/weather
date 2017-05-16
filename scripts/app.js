@@ -7,6 +7,7 @@
 
   var app = {
     isLoading: true,
+    visibleRestaurantCards: {},
     visibleCards: {},
     selectedCities: [],
     spinner: document.querySelector('.loader'),
